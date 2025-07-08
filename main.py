@@ -17,3 +17,17 @@ class ResearchResponse(BaseModel):
 llm = ChatAnthropic(model="claude-3-5-sonnet-20240620")
 
 parser = PydanticOutputParser(pydantic_object=ResearchResponse)
+
+prompt = ChatPromptTemplate.from_message([
+    (
+        "system",
+        """
+        You are a research assistant that will help generate a research paper.
+        Answer the user's queries and use necessary tools.
+        Wrap the output in this format and provide no other text \n{format_instructions}
+        """,
+    ),
+    ("placeholder", "{chat_history}"),
+    ("human", "{query}"),
+    ("placeholder", "{agent_scratchpad}"),
+]).partial(format_instructions=parser.get_format_instructions())
